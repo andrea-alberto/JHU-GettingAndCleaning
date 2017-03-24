@@ -14,4 +14,5 @@ The following are the file needed to execure the run_analysis.R script
 The ouput of the script contains in the first two columns
 - activity: the type of activity performed
 - subject: an identifier for the subject who performed the activity
+
 Then follows a column for each variable, and the value in that column is the average value for the activity and subject in the corresponding row.
