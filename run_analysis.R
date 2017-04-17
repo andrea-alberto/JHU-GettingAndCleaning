@@ -7,11 +7,11 @@ features <-  data.table(read.csv('features.txt', colClasses = c("integer", "char
 
 # substitues -() and - with .
 featureNames <- features$name
-featureNames <- gsub('\\(\\)-','\\.',featureNames)
-featureNames <- gsub('\\(\\)','\\.',featureNames)
-featureNames <- gsub('\\(','\\.',featureNames)
-featureNames <- gsub('\\)','\\.',featureNames)
+
+# remove - start
+featureNames <- gsub('\\(\\)','',featureNames)
 featureNames <- gsub('-','\\.',featureNames)
+# remove - end
 
 
 # create the class vector
@@ -55,8 +55,9 @@ data <- rbind(train, test)
 #identify the columns having mean or std values
 meanOrStdColumns <- grep('(mean)|(std)',featureNames, value = TRUE)
 
-# 2. Extracts only the measurements on the mean and standard deviation for each measurement.
-meanOrStd <- data[, ..meanOrStdColumns]
+# 2. Extracts only the measurements on the mean and standard deviation for each measurement, with their activity and subject fields.
+columns <- c('activity','subject',meanOrStdColumns)
+extractedData <- data[, ..columns]
 
 # 3. Uses descriptive activity names to name the activities in the data set
 # read the activities names
@@ -65,11 +66,10 @@ activities <- read.csv('activity_labels.txt',
                              header = FALSE,
                              sep = '',
                              col.names = c('level','label'))
-data$activity <- factor(x = data$activity, levels = activities$level, labels = activities$label)
+extractedData$activity <- factor(x = extractedData$activity, levels = activities$level, labels = activities$label)
 
 
 # 5. From the data set in step 4, creates a second, independent tidy data set with the average of 
 #   each variable for each activity and each subject.
-averageData <- data[,lapply(.SD,mean),by=.(activity,subject)]
-
+averageData <- extractedData[,lapply(.SD,mean),by=.(activity,subject)]
 write.table(x = averageData, row.names = FALSE, file = 'averageData.txt')
